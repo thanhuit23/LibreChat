@@ -657,7 +657,7 @@ class OpenAIClient extends BaseClient {
       configOptions.baseOptions = {
         headers: {
           'HTTP-Referer': 'https://tek.ai',
-          'X-Title': 'TekAI',
+          'X-Title': 'Michael AI',
         },
       };
     }
@@ -1159,7 +1159,7 @@ ${convo}
       if (this.useOpenRouter) {
         opts.defaultHeaders = {
           'HTTP-Referer': 'https://tek.ai',
-          'X-Title': 'TekAI',
+          'X-Title': 'Michael AI',
         };
       }
 

@@ -44,8 +44,8 @@ export default defineConfig({
       },
       includeAssets: ['**/*'],
       manifest: {
-        name: 'TekAI',
-        short_name: 'TekAI',
+        name: 'Michael AI',
+        short_name: 'Michael AI',
         start_url: '/',
         display: 'standalone',
         background_color: '#000000',

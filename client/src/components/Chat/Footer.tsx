@@ -37,7 +37,7 @@ export default function Footer({ className }: { className?: string }) {
   const mainContentParts = (
     typeof config?.customFooter === 'string'
       ? config.customFooter
-      : '[TekAI ' +
+      : '[Michael AI ' +
         Constants.VERSION +
         '](https://tek.ai) - ' +
         localize('com_ui_latest_footer')

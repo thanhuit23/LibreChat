@@ -91,8 +91,8 @@ function getLLMConfig(apiKey, options = {}, endpoint = null) {
     configOptions.baseURL = reverseProxyUrl;
     configOptions.defaultHeaders = Object.assign(
       {
-        'HTTP-Referer': 'https://librechat.ai',
-        'X-Title': 'TekAI',
+        'HTTP-Referer': 'https://tek.ai',
+        'X-Title': 'Michael AI',
       },
       headers,
     );

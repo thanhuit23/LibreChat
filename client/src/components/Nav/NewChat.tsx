@@ -26,7 +26,8 @@ const NewChatButtonIcon = ({ conversation }: { conversation: TConversation | nul
   }
 
   let { endpoint = '' } = conversation ?? {};
-  const iconURL = conversation?.iconURL ?? '';
+  // const iconURL = conversation?.iconURL ?? '';
+  const iconURL = 'http://localhost:3080/assets/logo.png';
   endpoint = getIconEndpoint({ endpointsConfig, iconURL, endpoint });
 
   const endpointType = getEndpointField(endpointsConfig, endpoint, 'type');

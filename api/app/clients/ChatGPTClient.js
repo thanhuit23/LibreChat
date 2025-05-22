@@ -267,7 +267,7 @@ class ChatGPTClient extends BaseClient {
 
     if (this.useOpenRouter) {
       opts.headers['HTTP-Referer'] = 'https://tek.ai';
-      opts.headers['X-Title'] = 'TekAI';
+      opts.headers['X-Title'] = 'Michael AI';
     }
 
     /* hacky fixes for Mistral AI API:

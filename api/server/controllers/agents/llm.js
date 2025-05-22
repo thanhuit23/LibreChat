@@ -71,7 +71,7 @@ function initializeLLM(options) {
     configOptions.baseOptions = {
       headers: {
         'HTTP-Referer': 'https://tek.ai',
-        'X-Title': 'TekAI',
+        'X-Title': 'Michael AI',
       },
     };
   }
