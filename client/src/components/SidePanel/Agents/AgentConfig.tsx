@@ -60,22 +60,27 @@ export default function AgentConfig({
     () => agentsConfig?.capabilities?.includes(AgentCapabilities.actions) ?? false,
     [agentsConfig],
   );
-  const artifactsEnabled = useMemo(
-    () => agentsConfig?.capabilities?.includes(AgentCapabilities.artifacts) ?? false,
-    [agentsConfig],
-  );
-  const ocrEnabled = useMemo(
-    () => agentsConfig?.capabilities?.includes(AgentCapabilities.ocr) ?? false,
-    [agentsConfig],
-  );
-  const fileSearchEnabled = useMemo(
-    () => agentsConfig?.capabilities?.includes(AgentCapabilities.file_search) ?? false,
-    [agentsConfig],
-  );
-  const codeEnabled = useMemo(
-    () => agentsConfig?.capabilities?.includes(AgentCapabilities.execute_code) ?? false,
-    [agentsConfig],
-  );
+  // const artifactsEnabled = useMemo(
+  //   () => agentsConfig?.capabilities?.includes(AgentCapabilities.artifacts) ?? false,
+  //   [agentsConfig],
+  // );
+  // const ocrEnabled = useMemo(
+  //   () => agentsConfig?.capabilities?.includes(AgentCapabilities.ocr) ?? false,
+  //   [agentsConfig],
+  // );
+  // const fileSearchEnabled = useMemo(
+  //   () => agentsConfig?.capabilities?.includes(AgentCapabilities.file_search) ?? false,
+  //   [agentsConfig],
+  // );
+  // const codeEnabled = useMemo(
+  //   () => agentsConfig?.capabilities?.includes(AgentCapabilities.execute_code) ?? false,
+  //   [agentsConfig],
+  // );
+  const artifactsEnabled = false;
+  const ocrEnabled = false;
+  const fileSearchEnabled = false;
+  const codeEnabled = false;
+  
 
   const context_files = useMemo(() => {
     if (typeof agent === 'string') {
