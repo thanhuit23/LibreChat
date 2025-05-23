@@ -26,7 +26,7 @@ function getImporter(jsonData) {
 
   // For LibreChat
   if (jsonData.conversationId && (jsonData.messagesTree || jsonData.messages)) {
-    logger.info('Importing LibreChat conversation');
+    logger.info('Importing Michael AI conversation');
     return importLibreChatConvo;
   }
 
@@ -170,7 +170,7 @@ async function importLibreChatConvo(
         importBatchBuilder.saveMessage(clonedMessage);
       }
     } else {
-      throw new Error('Invalid LibreChat file format');
+      throw new Error('Invalid Michael AI file format');
     }
 
     if (firstMessageDate === 'Invalid Date') {
@@ -181,7 +181,7 @@ async function importLibreChatConvo(
     await importBatchBuilder.saveBatch();
     logger.debug(`user: ${requestUserId} | Conversation "${jsonData.title}" imported`);
   } catch (error) {
-    logger.error(`user: ${requestUserId} | Error creating conversation from LibreChat file`, error);
+    logger.error(`user: ${requestUserId} | Error creating conversation from Michael AI file`, error);
   }
 }
 
