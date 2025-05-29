@@ -74,14 +74,20 @@ export default function AgentConfig({
   //   () => agentsConfig?.capabilities?.includes(AgentCapabilities.file_search) ?? false,
   //   [agentsConfig],
   // );
-  const webSearchEnabled = useMemo(
-    () => agentsConfig?.capabilities?.includes(AgentCapabilities.web_search) ?? false,
-    [agentsConfig],
-  );
+  // const webSearchEnabled = useMemo(
+  //   () => agentsConfig?.capabilities?.includes(AgentCapabilities.web_search) ?? false,
+  //   [agentsConfig],
+  // );
   // const codeEnabled = useMemo(
   //   () => agentsConfig?.capabilities?.includes(AgentCapabilities.execute_code) ?? false,
   //   [agentsConfig],
   // );
+
+  const artifactsEnabled = false;
+  const ocrEnabled = false;
+  const fileSearchEnabled = false;
+  const webSearchEnabled = false;
+  const codeEnabled = false;
 
   const context_files = useMemo(() => {
     if (typeof agent === 'string') {
