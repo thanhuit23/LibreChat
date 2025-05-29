@@ -11,25 +11,23 @@ export type Conversation = {
   conversations: s.TConversation[];
 };
 
-// Parameters for listing conversations (e.g., for pagination)
 export type ConversationListParams = {
-  limit?: number;
-  before?: string | null;
-  after?: string | null;
-  order?: 'asc' | 'desc';
-  pageNumber: string;
-  conversationId?: string;
+  cursor?: string;
   isArchived?: boolean;
+  sortBy?: 'title' | 'createdAt' | 'updatedAt';
+  sortDirection?: 'asc' | 'desc';
   tags?: string[];
+  search?: string;
 };
 
-// Type for the response from the conversation list API
+export type MinimalConversation = Pick<
+  s.TConversation,
+  'conversationId' | 'endpoint' | 'title' | 'createdAt' | 'updatedAt' | 'user'
+>;
+
 export type ConversationListResponse = {
-  conversations: s.TConversation[];
-  pageNumber: string;
-  pageSize: string | number;
-  pages: string | number;
-  messages: s.TMessage[];
+  conversations: MinimalConversation[];
+  nextCursor: string | null;
 };
 
 export type ConversationData = InfiniteData<ConversationListResponse>;
@@ -38,6 +36,23 @@ export type ConversationUpdater = (
   conversation: s.TConversation,
 ) => ConversationData;
 
+/* Messages */
+export type MessagesListParams = {
+  cursor?: string | null;
+  sortBy?: 'endpoint' | 'createdAt' | 'updatedAt';
+  sortDirection?: 'asc' | 'desc';
+  pageSize?: number;
+  conversationId?: string;
+  messageId?: string;
+  search?: string;
+};
+
+export type MessagesListResponse = {
+  messages: s.TMessage[];
+  nextCursor: string | null;
+};
+
+/* Shared Links */
 export type SharedMessagesResponse = Omit<s.TSharedLink, 'messages'> & {
   messages: s.TMessage[];
 };
@@ -86,7 +101,11 @@ export type AllPromptGroupsResponse = t.TPromptGroup[];
 export type ConversationTagsResponse = s.TConversationTag[];
 
 export type VerifyToolAuthParams = { toolId: string };
-export type VerifyToolAuthResponse = { authenticated: boolean; message?: string | s.AuthType };
+export type VerifyToolAuthResponse = {
+  authenticated: boolean;
+  message?: string | s.AuthType;
+  authTypes?: [string, s.AuthType][];
+};
 
 export type GetToolCallParams = { conversationId: string };
 export type ToolCallResults = a.ToolCallResult[];
