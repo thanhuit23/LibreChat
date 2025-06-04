@@ -8,18 +8,22 @@ process.env.CREDS_IV = '0123456789abcdef';
 
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
+const { agentSchema } = require('@librechat/data-schemas');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const {
-  Agent,
-  addAgentResourceFile,
-  removeAgentResourceFiles,
+  getAgent,
   createAgent,
   updateAgent,
-  getAgent,
   deleteAgent,
   getListAgents,
   updateAgentProjects,
+  addAgentResourceFile,
+  removeAgentResourceFiles,
 } = require('./Agent');
+/**
+ * @type {import('mongoose').Model<import('@librechat/data-schemas').IAgent>}
+ */
+let Agent;
 
 describe('Agent Resource File Operations', () => {
   let mongoServer;
@@ -27,6 +31,7 @@ describe('Agent Resource File Operations', () => {
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
     const mongoUri = mongoServer.getUri();
+    Agent = mongoose.models.Agent || mongoose.model('Agent', agentSchema);
     await mongoose.connect(mongoUri);
   });
 
@@ -903,7 +908,7 @@ describe('Agent Version History', () => {
     const updatedAgent = await updateAgent(
       { id: agentId },
       { name: 'Updated Agent', description: 'Updated description' },
-      updatingUser.toString(),
+      { updatingUserId: updatingUser.toString() },
     );
 
     expect(updatedAgent.versions).toHaveLength(2);
@@ -927,7 +932,7 @@ describe('Agent Version History', () => {
     const updatedAgent = await updateAgent(
       { id: agentId },
       { name: 'Updated Agent', description: 'Updated description' },
-      originalAuthor.toString(),
+      { updatingUserId: originalAuthor.toString() },
     );
 
     expect(updatedAgent.versions).toHaveLength(2);
@@ -955,28 +960,28 @@ describe('Agent Version History', () => {
     await updateAgent(
       { id: agentId },
       { name: 'Updated by User 1', description: 'First update' },
-      user1.toString(),
+      { updatingUserId: user1.toString() },
     );
 
     // Original author makes an update
     await updateAgent(
       { id: agentId },
       { description: 'Updated by original author' },
-      originalAuthor.toString(),
+      { updatingUserId: originalAuthor.toString() },
     );
 
     // User 2 makes an update
     await updateAgent(
       { id: agentId },
       { name: 'Updated by User 2', model: 'new-model' },
-      user2.toString(),
+      { updatingUserId: user2.toString() },
     );
 
     // User 3 makes an update
     const finalAgent = await updateAgent(
       { id: agentId },
       { description: 'Final update by User 3' },
-      user3.toString(),
+      { updatingUserId: user3.toString() },
     );
 
     expect(finalAgent.versions).toHaveLength(5);
@@ -1012,7 +1017,7 @@ describe('Agent Version History', () => {
     await updateAgent(
       { id: agentId },
       { name: 'Updated Agent', description: 'Updated description' },
-      updatingUser.toString(),
+      { updatingUserId: updatingUser.toString() },
     );
 
     const { revertAgentVersion } = require('./Agent');
@@ -1021,5 +1026,56 @@ describe('Agent Version History', () => {
     expect(revertedAgent.author.toString()).toBe(originalAuthor.toString());
     expect(revertedAgent.name).toBe('Original Agent');
     expect(revertedAgent.description).toBe('Original description');
+  });
+
+  test('should detect action metadata changes and force version update', async () => {
+    const agentId = `agent_${uuidv4()}`;
+    const authorId = new mongoose.Types.ObjectId();
+    const actionId = 'testActionId123';
+
+    // Create agent with actions
+    await createAgent({
+      id: agentId,
+      name: 'Agent with Actions',
+      provider: 'test',
+      model: 'test-model',
+      author: authorId,
+      actions: [`test.com_action_${actionId}`],
+      tools: ['listEvents_action_test.com', 'createEvent_action_test.com'],
+    });
+
+    // First update with forceVersion should create a version
+    const firstUpdate = await updateAgent(
+      { id: agentId },
+      { tools: ['listEvents_action_test.com', 'createEvent_action_test.com'] },
+      { updatingUserId: authorId.toString(), forceVersion: true },
+    );
+
+    expect(firstUpdate.versions).toHaveLength(2);
+
+    // Second update with same data but forceVersion should still create a version
+    const secondUpdate = await updateAgent(
+      { id: agentId },
+      { tools: ['listEvents_action_test.com', 'createEvent_action_test.com'] },
+      { updatingUserId: authorId.toString(), forceVersion: true },
+    );
+
+    expect(secondUpdate.versions).toHaveLength(3);
+
+    // Update without forceVersion and no changes should not create a version
+    let error;
+    try {
+      await updateAgent(
+        { id: agentId },
+        { tools: ['listEvents_action_test.com', 'createEvent_action_test.com'] },
+        { updatingUserId: authorId.toString(), forceVersion: false },
+      );
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toBeDefined();
+    expect(error.message).toContain('Duplicate version');
+    expect(error.statusCode).toBe(409);
   });
 });
