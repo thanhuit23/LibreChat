@@ -4,6 +4,7 @@ const availableTools = require('./manifest.json');
 const DALLE3 = require('./structured/DALLE3');
 const FluxAPI = require('./structured/FluxAPI');
 const OpenWeather = require('./structured/OpenWeather');
+const PolygonIO = require('./structured/PolygonIO');
 const StructuredWolfram = require('./structured/Wolfram');
 const createYouTubeTools = require('./structured/YouTube');
 const StructuredACS = require('./structured/AzureAISearch');
@@ -34,6 +35,7 @@ module.exports = {
   DALLE3,
   FluxAPI,
   OpenWeather,
+  PolygonIO,
   StructuredSD,
   StructuredACS,
   GoogleSearchAPI,

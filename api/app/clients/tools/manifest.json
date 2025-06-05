@@ -192,5 +192,18 @@
         "description": "Provide your Flux API key from your user profile."
       }
     ]
+  },
+  {
+    "name": "Polygon.io",
+    "pluginKey": "polygon_io",
+    "description": "Polygon.io is a financial market data platform that provides real-time and historical data for stocks, options, forex, and cryptocurrencies.",
+    "icon": "/assets/polygon.svg",
+    "authConfig": [
+      {
+        "authField": "POLYGON_API_KEY",
+        "label": "Polygon.io API Key",
+        "description": "Get your API key here: <a href=\"https://polygon.io/\" target=\"_blank\">Polygon.io</a>"
+      }
+    ]        
   }
 ]
