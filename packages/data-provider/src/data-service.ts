@@ -695,6 +695,10 @@ export function getCategories(): Promise<t.TGetCategoriesResponse> {
   return request.get(endpoints.getCategories());
 }
 
+export function getMCPs(): Promise<t.TGetMCPResponse> {
+  return request.get(endpoints.getMCPs());
+}
+
 export function getRandomPrompts(
   variables: t.TGetRandomPromptsRequest,
 ): Promise<t.TGetRandomPromptsResponse> {

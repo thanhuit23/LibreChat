@@ -368,6 +368,19 @@ export class MCPManager {
   }
 
   /**
+   * Return server names of all mcp servers
+   */
+
+  public async getServerNames(): Promise<string[]> {
+    const serverNames: string[] = [];
+    const entries = Object.entries(this.mcpConfigs);
+    entries.map(async ([serverName, _config], i) => {
+      serverNames.push(serverName);
+    });
+    return serverNames;
+  }
+
+  /**
    * Loads tools from all app-level connections into the manifest.
    */
   public async loadManifestTools(manifestTools: t.LCToolManifest): Promise<t.LCToolManifest> {

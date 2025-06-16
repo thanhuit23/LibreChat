@@ -14,6 +14,8 @@ services:
       - rag_api
     # image: docker.io/thanhit08/tekai-dev:latest
     restart: always
+    networks:
+      - mcpnet
     user: "${UID}:${GID}"
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -27,6 +29,9 @@ services:
       - type: bind
         source: ./.env
         target: /app/.env
+      - type: bind
+        source: ./librechat.yaml
+        target: /app/librechat.yaml
       - ./images:/app/client/public/images
       - ./uploads:/app/uploads
       - ./logs:/app/api/logs
@@ -34,6 +39,8 @@ services:
     container_name: chat-mongodb
     image: mongo
     restart: always
+    networks:
+      - mcpnet
     user: "${UID}:${GID}"
     volumes:
       - ./data-node:/data/db
@@ -42,6 +49,8 @@ services:
     container_name: chat-meilisearch
     image: getmeili/meilisearch:v1.12.3
     restart: always
+    networks:
+      - mcpnet
     user: "${UID}:${GID}"
     environment:
       - MEILI_HOST=http://meilisearch:7700
@@ -57,6 +66,8 @@ services:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
     restart: always
+    networks:
+      - mcpnet
     volumes:
       - pgdata2:/var/lib/postgresql/data
   rag_api:
@@ -66,6 +77,8 @@ services:
       - DB_HOST=vectordb
       - RAG_PORT=${RAG_PORT:-8000}
     restart: always
+    networks:
+      - mcpnet
     depends_on:
       - vectordb
     env_file:
@@ -73,3 +86,6 @@ services:
 
 volumes:
   pgdata2:
+networks:
+  mcpnet:
+    external: true

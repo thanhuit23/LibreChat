@@ -248,6 +248,8 @@ export const deletePrompt = ({ _id, groupId }: { _id: string; groupId: string })
 
 export const getCategories = () => '/api/categories';
 
+export const getMCPs = () => '/api/mcp';
+
 export const getAllPromptGroups = () => `${prompts()}/all`;
 
 /* Roles */

@@ -1,12 +1,19 @@
 import React, { memo, useRef, useMemo, useEffect, useCallback } from 'react';
 import { useRecoilState } from 'recoil';
 import { Constants, EModelEndpoint, LocalStorageKeys } from 'librechat-data-provider';
-import { useAvailableToolsQuery } from '~/data-provider';
+import { useAvailableToolsQuery, useGetMCP } from '~/data-provider';
 import useLocalStorage from '~/hooks/useLocalStorageAlt';
 import MultiSelect from '~/components/ui/MultiSelect';
 import { ephemeralAgentByConvoId } from '~/store';
 import MCPIcon from '~/components/ui/MCPIcon';
 import { useLocalize } from '~/hooks';
+
+const loadingMCPServers: { name: string; isDefault: boolean }[] = [
+  {
+    name: 'time',
+    isDefault: true,
+  },
+];
 
 const storageCondition = (value: unknown, rawCurrentValue?: string | null) => {
   if (rawCurrentValue) {
@@ -68,6 +75,32 @@ function MCPSelect({ conversationId }: { conversationId?: string | null }) {
     storageCondition,
   );
 
+  const { data: mcpServersData = loadingMCPServers } = useGetMCP({
+    select: (data) =>
+      data.map((mcpServer) => ({
+        name: mcpServer.name,
+        isDefault: Boolean(mcpServer.isDefault), // Ensure boolean type
+      })),
+  });
+
+  // Extract default server names from mcpServers where isDefault = true
+  const defaultMCPServers = mcpServersData
+    .filter(server => server.isDefault)
+    .map(server => server.name);
+
+  // Ensure defaultMCPServers is always an array of strings
+  useEffect(() => {
+    if (!mcpValues) {
+      setMCPValues(defaultMCPServers);
+      return;
+    }
+    const missingDefaults = defaultMCPServers.filter(server => !mcpValues.includes(server));
+    if (missingDefaults.length > 0) {
+      setMCPValues([...mcpValues, ...missingDefaults]);
+    }
+  }, [mcpValues, defaultMCPServers, setMCPValues]);
+
+  // Effect to update mcpValues based on mcpServerSet
   useEffect(() => {
     if (hasSetFetched.current === key) {
       return;
@@ -85,19 +118,32 @@ function MCPSelect({ conversationId }: { conversationId?: string | null }) {
 
   const renderSelectedValues = useCallback(
     (values: string[], placeholder?: string) => {
-      if (values.length === 0) {
+      // Check if "time" is in the values and remove it
+      const filteredValues = values.filter(
+        value => !defaultMCPServers.includes(value)
+      );
+      if (filteredValues.length === 0) {
         return placeholder || localize('com_ui_select') + '...';
       }
-      if (values.length === 1) {
-        return values[0];
+      if (filteredValues.length === 1) {
+        return filteredValues[0];
       }
-      return localize('com_ui_x_selected', { 0: values.length });
+      return localize('com_ui_x_selected', { 0: filteredValues.length });
     },
     [localize],
   );
 
   const mcpServers = useMemo(() => {
-    return Array.from(mcpServerSet ?? []);
+    // Step 1: Create base list from set
+    const servers = Array.from(mcpServerSet ?? []) as string[];
+
+    // Step 2: If the set is empty or undefined, return null
+    if (!mcpServerSet || mcpServerSet.size === 0) {
+      return null;
+    }
+
+    // Step 3: If "time" exists in the real server list, remove it
+    return servers.filter(server => !defaultMCPServers.includes(server));
   }, [mcpServerSet]);
 
   if (!mcpServerSet || mcpServerSet.size === 0) {

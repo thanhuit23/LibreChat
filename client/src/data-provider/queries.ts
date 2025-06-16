@@ -509,6 +509,23 @@ export const useGetCategories = <TData = t.TGetCategoriesResponse>(
   );
 };
 
+export const useGetMCP = <TData = t.TGetMCPResponse>(
+  config?: UseQueryOptions<t.TGetMCPResponse, unknown, TData>,
+): QueryObserverResult<TData> => {
+  return useQuery<t.TGetMCPResponse, unknown, TData>(
+    [QueryKeys.mcp],
+    () => dataService.getMCPs(),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+      retry: false,
+      ...config,
+      enabled: config?.enabled !== undefined ? config.enabled : true,
+    },
+  );
+};
+
 export const useGetRandomPrompts = (
   filter: t.TGetRandomPromptsRequest,
   config?: UseQueryOptions<t.TGetRandomPromptsResponse>,

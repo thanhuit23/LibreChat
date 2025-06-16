@@ -667,6 +667,11 @@ export const configSchema = z.object({
       allowedDomains: z.array(z.string()).optional(),
     })
     .optional(),
+  mcpServerConfig: z
+    .object({
+      defaultMCPServers: z.array(z.string()).optional(),
+    })
+    .optional(),
   registration: z
     .object({
       socialLogins: z.array(z.string()).optional(),

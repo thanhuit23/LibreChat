@@ -8,6 +8,8 @@ import {
   SelectPopover,
   SelectProvider,
 } from '@ariakit/react';
+import { useGetMCP } from '~/data-provider';
+
 import { cn } from '~/utils';
 
 interface MultiSelectProps<T extends string> {
@@ -38,6 +40,13 @@ function defaultRender<T extends string>(values: T[], placeholder?: string) {
   return `${values.length} items selected`;
 }
 
+const loadingMCPServers: { name: string; isDefault: boolean }[] = [
+  {
+    name: 'time',
+    isDefault: true,
+  },
+];
+
 export default function MultiSelect<T extends string>({
   items,
   label,
@@ -58,6 +67,32 @@ export default function MultiSelect<T extends string>({
   const selectRef = useRef<HTMLButtonElement>(null);
   // const [selectedValues, setSelectedValues] = React.useState<T[]>(defaultSelectedValues);
 
+  // const { data: startupConfig } = useGetStartupConfig();
+
+  const { data: mcpServers = loadingMCPServers } = useGetMCP({
+    select: (data) =>
+      data.map((mcpServer) => ({
+        name: mcpServer.name,
+        isDefault: Boolean(mcpServer.isDefault), // Ensure boolean type
+      })),
+  });
+
+  // Extract default server names from mcpServers where isDefault = true
+  const defaultMCPServers = mcpServers
+    .filter(server => server.isDefault)
+    .map(server => server.name);
+
+  // Use defaultMCPServers with fallback if empty
+  const serverNamesForFiltering = defaultMCPServers.length > 0 ? defaultMCPServers : ['time'];
+
+  const filteredSelectedValues = selectedValues.filter(
+    (value) => !serverNamesForFiltering.includes(value)
+  );
+
+  if (filteredSelectedValues.length === 0) {
+    return null;
+  }
+
   const handleValueChange = (values: T[]) => {
     setSelectedValues(values);
     if (onSelectedValuesChange) {
@@ -67,7 +102,7 @@ export default function MultiSelect<T extends string>({
 
   return (
     <div className={className}>
-      <SelectProvider value={selectedValues} setValue={handleValueChange}>
+      <SelectProvider value={filteredSelectedValues} setValue={handleValueChange}>
         {label && (
           <SelectLabel className={cn('mb-1 block text-sm text-text-primary', labelClassName)}>
             {label}
@@ -80,13 +115,13 @@ export default function MultiSelect<T extends string>({
             'bg-surface-tertiary text-text-primary shadow-sm hover:cursor-pointer hover:bg-surface-hover',
             'outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75',
             selectClassName,
-            selectedValues.length > 0 && selectItemsClassName != null && selectItemsClassName,
+            filteredSelectedValues.length > 0 && selectItemsClassName != null && selectItemsClassName,
           )}
           onChange={(e) => e.stopPropagation()}
         >
           {selectIcon && selectIcon}
           <span className="mr-auto hidden truncate md:block">
-            {renderSelectedValues(selectedValues, placeholder)}
+            {renderSelectedValues(filteredSelectedValues, placeholder)}
           </span>
           <SelectArrow className="ml-1 hidden stroke-1 text-base opacity-75 md:block" />
         </Select>

@@ -102,6 +102,11 @@ export type TCategory = {
   label: string;
 };
 
+export type TMCP = {
+  name: string;
+  isDefault: boolean;
+};
+
 export type TError = {
   message: string;
   code?: number | string;
@@ -527,6 +532,8 @@ export type TDeletePromptGroupRequest = {
 };
 
 export type TGetCategoriesResponse = TCategory[];
+
+export type TGetMCPResponse = TMCP[];
 
 export type TGetRandomPromptsResponse = {
   prompts: TPromptGroup[];
