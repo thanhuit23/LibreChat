@@ -57,10 +57,10 @@ export function getEnabledEndpoints() {
     EModelEndpoint.assistants,
     EModelEndpoint.azureAssistants,
     EModelEndpoint.azureOpenAI,
-    EModelEndpoint.google,
+    // EModelEndpoint.google,
     EModelEndpoint.chatGPTBrowser,
     EModelEndpoint.gptPlugins,
-    EModelEndpoint.anthropic,
+    // EModelEndpoint.anthropic,
     EModelEndpoint.bedrock,
   ];
 
